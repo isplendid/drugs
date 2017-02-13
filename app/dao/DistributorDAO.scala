@@ -19,7 +19,5 @@ class DistributorSlickDAO @Inject() (
 ) extends DistributorDAO with DistributorComponet with HasDatabaseConfigProvider[JdbcProfile] {
   import driver.api._
 
-  val distributors = TableQuery[Distributors]
-
   def all(): DBIO[Seq[Distributor]] = distributors.result
 }

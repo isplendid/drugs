@@ -1,29 +1,23 @@
 package functional.util
 
-import model.{Distributor, Drug, Ingredient}
-import play.api.db.slick.DatabaseConfigProvider
-import slick.backend.DatabaseConfig
+import model._
+import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.driver.JdbcProfile
+import tables._
 
 import scala.concurrent.duration._
 
-trait TestDBData {
+trait AllComponent extends DrugComponent with DistributorComponet with IngredientComponet {
+  this: HasDatabaseConfigProvider[JdbcProfile] =>
+}
+
+trait TestDBData extends AllComponent with HasDatabaseConfigProvider[JdbcProfile] {
   this: WithTestInjector =>
 
-  protected lazy val dbConfig: DatabaseConfig[JdbcProfile] = injector
+  override protected lazy val dbConfigProvider: DatabaseConfigProvider = injector
     .instanceOf[DatabaseConfigProvider]
-    .get[JdbcProfile]
 
-  import dao._
   import dbConfig.driver.api._
-
-  private lazy val drugDAO = injector.instanceOf[DrugSlickDAO]
-  private lazy val distributorDAO = injector.instanceOf[DistributorSlickDAO]
-  private lazy val ingredientDAO = injector.instanceOf[IngredientSlickDAO]
-
-  import distributorDAO.distributors
-  import drugDAO.drugs
-  import ingredientDAO.ingredients
 
   protected val timeout: FiniteDuration = 5.seconds
 

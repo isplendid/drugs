@@ -1,15 +1,16 @@
 package functional.util
 
-import org.scalatest.{BeforeAndAfterEachTestData, TestData, Suite}
-import play.api.db.slick.DatabaseConfigProvider
+import org.scalatest.{BeforeAndAfterEachTestData, Suite, TestData}
+import play.api.db.slick.HasDatabaseConfigProvider
 import slick.driver.JdbcProfile
 
 import scala.concurrent.Await
 
 trait InMemoryDatabase extends BeforeAndAfterEachTestData {
-  this: Suite with WithTestInjector with TestDBData =>
+  this: Suite
+    with TestDBData
+    with HasDatabaseConfigProvider[JdbcProfile] =>
 
-  import dbConfig.db
   import dbConfig.driver.api._
 
   override protected def beforeEach(testData: TestData): Unit = {

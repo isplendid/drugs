@@ -1,10 +1,10 @@
 package dao
 
 import com.google.inject.{Inject, Singleton}
+import model.Drug
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.driver.JdbcProfile
-import model.Drug
-import tables.DrugComponent
+import tables.{DistributorComponet, DrugComponent}
 
 trait DrugDAO {
   import slick.dbio.DBIO
@@ -17,10 +17,12 @@ trait DrugDAO {
 @Singleton
 class DrugSlickDAO @Inject() (
   protected val dbConfigProvider: DatabaseConfigProvider
-) extends DrugDAO with DrugComponent with HasDatabaseConfigProvider[JdbcProfile] {
+) extends DrugDAO
+  with DrugComponent
+  with DistributorComponet
+  with HasDatabaseConfigProvider[JdbcProfile]
+{
   import driver.api._
-
-  val drugs = TableQuery[Drugs]
 
   def all(): DBIO[Seq[Drug]] = drugs.result
   def byName(name: String): DBIO[Seq[Drug]] = drugs.filter(_.name === name).result

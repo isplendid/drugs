@@ -12,4 +12,6 @@ trait DistributorComponet { self: HasDatabaseConfigProvider[JdbcProfile] =>
 
     def * = (name, id.?) <> ((model.Distributor.apply _).tupled, model.Distributor.unapply)
   }
+
+  protected val distributors = TableQuery[Distributors]
 }

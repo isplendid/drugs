@@ -11,8 +11,8 @@ import scala.concurrent.duration._
 class DrugDBServiceTest()
   extends PlaySpec
     with OneAppPerSuite
-    with InMemoryDatabase
     with WithTestInjector
+    with InMemoryDatabase
     with TestDBData {
 
   "DrugDBServiceTest" should {
