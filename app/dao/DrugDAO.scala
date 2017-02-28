@@ -2,15 +2,20 @@ package dao
 
 import com.google.inject.{Inject, Singleton}
 import model.Drug
+import model.Drug.Id
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
 import slick.driver.JdbcProfile
 import tables.{DistributorComponet, DrugComponent}
 
-trait DrugDAO {
-  import slick.dbio.DBIO
+import scala.concurrent.Future
 
-  def all(): DBIO[Seq[Drug]]
-  def byName(name: String): DBIO[Seq[Drug]]
+trait DrugDAO {
+
+  def all(): Future[Seq[Drug]]
+  def byId(id: Id): Future[Option[Drug]]
+  def insert(drug: Drug): Future[Drug.Id]
+  def update(drug: Drug): Future[Int]
+  def delete(id: Drug.Id): Future[Int]
 
 }
 
@@ -24,6 +29,16 @@ class DrugSlickDAO @Inject() (
 {
   import driver.api._
 
-  def all(): DBIO[Seq[Drug]] = drugs.result
-  def byName(name: String): DBIO[Seq[Drug]] = drugs.filter(_.name === name).result
+  def all(): Future[Seq[Drug]] = db.run(drugs.result)
+
+  def byId(id: Id): Future[Option[Drug]] = db.run(drugs.filter(_.id === id).result.headOption)
+
+  def insert(drug: Drug): Future[Drug.Id] = db.run(
+    (drugs returning drugs.map(_.id)) += drug
+  )
+
+  def update(drug: Drug): Future[Int] = db.run(drugs.filter(_.id === drug.id).update(drug))
+
+  def delete(id: Drug.Id): Future[Int] = db.run(drugs.filter(_.id === id).delete)
+
 }

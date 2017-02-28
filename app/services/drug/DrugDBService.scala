@@ -1,26 +1,38 @@
 package services.drug
 
 import com.google.inject.{Inject, Singleton}
-import dao._
-import model.Ingredient
-import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
-import slick.driver.JdbcProfile
-import util.Util.Implicits.Futurable
-
 import scala.concurrent.{ExecutionContext, Future}
+
+import util.Util.Implicits.Futurable
+import dao._
+import model._
 
 @Singleton
 class DrugDBService @Inject()(
   drugDAO: DrugDAO,
   ingredientDAO: IngredientDAO,
-  protected val dbConfigProvider: DatabaseConfigProvider
-) extends DrugService with HasDatabaseConfigProvider[JdbcProfile] {
+  distributorDAO: DistributorDAO
+) extends DrugService {
 
-  def getIngredientsByDrugName(name: String)(implicit ec: ExecutionContext): Future[Seq[Ingredient]] = for {
-    drugs <- db.run(drugDAO.byName(name))
-    drug <- if (drugs.length == 1) drugs.head.future else Future.failed(
-      new RuntimeException("Drug is not found or the name is not unique."))
-    ingrs <- drug.id.fold(Future.failed[Seq[Ingredient]](
-      new RuntimeException("Drug has no id.")))(id => db.run(ingredientDAO.byDrugId(id)))
-  } yield ingrs
+
+  def deleteDrug(id: Drug.Id)(implicit ec: ExecutionContext): Future[Int] = drugDAO.delete(id)
+
+  def insert(distributor: Distributor)(implicit ec: ExecutionContext): Future[Distributor.Id] = {
+    distributorDAO.insert(distributor)
+  }
+
+  def insert(drug: Drug)(implicit ec: ExecutionContext): Future[Drug.Id] = drugDAO.insert(drug)
+
+  def insert(ingredient: Ingredient)(implicit ec: ExecutionContext): Future[Ingredient.Id] = {
+    ingredientDAO.insert(ingredient)
+  }
+
+  def getDrugs(implicit ec: ExecutionContext): Future[Seq[Drug]] = drugDAO.all()
+
+  def renameDrug(id: Drug.Id, name: String)(implicit ec: ExecutionContext): Future[Int] = for {
+    drugOpt <- drugDAO.byId(id)
+    drug    <- drugOpt.getOrElse[Drug](throw new RuntimeException("Invalid drug Id.")).future
+    rows    <- drugDAO.update(drug.copy(name = name))
+  } yield rows
+
 }

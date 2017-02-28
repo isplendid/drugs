@@ -6,11 +6,12 @@ import slick.driver.JdbcProfile
 import model.Ingredient
 import tables.{DistributorComponet, DrugComponent, IngredientComponet}
 
-trait IngredientDAO {
-  import slick.dbio.DBIO
+import scala.concurrent.Future
 
-  def all(): DBIO[Seq[Ingredient]]
-  def byDrugId(id: model.Drug.Id): DBIO[Seq[Ingredient]]
+trait IngredientDAO {
+
+  def all(): Future[Seq[Ingredient]]
+  def insert(ingredient: Ingredient): Future[Ingredient.Id]
 
 }
 
@@ -25,6 +26,10 @@ class IngredientSlickDAO @Inject() (
 {
   import driver.api._
 
-  def all(): DBIO[Seq[Ingredient]] = ingredients.result
-  def byDrugId(id: model.Drug.Id): DBIO[Seq[Ingredient]] = ingredients.filter(_.drugId === id).result
+  def all(): Future[Seq[Ingredient]] = db.run(ingredients.result)
+
+  def insert(ingredient: Ingredient): Future[Ingredient.Id] = db.run(
+    (ingredients returning ingredients.map(_.id)) += ingredient
+  )
+
 }

@@ -6,10 +6,12 @@ import slick.driver.JdbcProfile
 import model.Distributor
 import tables.DistributorComponet
 
-trait DistributorDAO {
-  import slick.dbio.DBIO
+import scala.concurrent.Future
 
-  def all(): DBIO[Seq[Distributor]]
+trait DistributorDAO {
+
+  def all(): Future[Seq[Distributor]]
+  def insert(distributor: Distributor): Future[Distributor.Id]
 
 }
 
@@ -19,5 +21,9 @@ class DistributorSlickDAO @Inject() (
 ) extends DistributorDAO with DistributorComponet with HasDatabaseConfigProvider[JdbcProfile] {
   import driver.api._
 
-  def all(): DBIO[Seq[Distributor]] = distributors.result
+  def all(): Future[Seq[Distributor]] = db.run(distributors.result)
+
+  def insert(distributor: Distributor): Future[Distributor.Id] = db.run(
+    (distributors returning distributors.map(_.id)) += distributor
+  )
 }

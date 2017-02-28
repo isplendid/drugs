@@ -1,6 +1,7 @@
 package model
 
 import Drug._
+import play.api.libs.json.{Json, OFormat}
 
 case class Drug(
   name: String,
@@ -8,7 +9,8 @@ case class Drug(
   id: Option[Id] = None
 )
 
-//TODO: Place some testable logic for demonstrating purpose.
 object Drug {
   type Id = Long
+
+  implicit val format: OFormat[Drug] = Json.format[Drug]
 }
