@@ -27,7 +27,7 @@ class DrugDBServiceTest extends FlatSpec with MockFactory {
   "DrugDBServiceTest" should "return the id of inserted drug" in new Spec {
     val exptId = 1l
     val drug = Drug("name", 1, Option(exptId))
-    (drugDAO.insert _).expects(drug).returns(exptId.future)
+    (drugDAO.insert _).expects(drug).returns(exptId.toFuture)
 
     val future = service.insert(drug).map { id =>
       assert(id === exptId)
@@ -39,7 +39,7 @@ class DrugDBServiceTest extends FlatSpec with MockFactory {
   it should "return the id of inserted ingredient" in new Spec {
     val exptId = 1l
     val ingr = Ingredient("name", 1, 1,  Option(exptId))
-    (ingreditenDAO.insert _).expects(ingr).returns(exptId.future)
+    (ingreditenDAO.insert _).expects(ingr).returns(exptId.toFuture)
 
     val future = service.insert(ingr).map { id =>
       assert(id === exptId)
@@ -51,7 +51,7 @@ class DrugDBServiceTest extends FlatSpec with MockFactory {
   it should "return the id of inserted distributor" in new Spec {
     val exptId = 1l
     val dist = Distributor("name", Option(exptId))
-    (distributorDAO.insert _).expects(dist).returns(exptId.future)
+    (distributorDAO.insert _).expects(dist).returns(exptId.toFuture)
 
     val future = service.insert(dist).map { id =>
       assert(id === exptId)
@@ -63,7 +63,7 @@ class DrugDBServiceTest extends FlatSpec with MockFactory {
   it should "return the number of affacted rows on deleting drug" in new Spec {
     val drugId = 1l
     val exptAffectedRows = 1
-    (drugDAO.delete _).expects(drugId).returns(exptAffectedRows.future)
+    (drugDAO.delete _).expects(drugId).returns(exptAffectedRows.toFuture)
 
     val future = service.deleteDrug(drugId).map { affectedRows =>
       assert(affectedRows === exptAffectedRows)
@@ -77,7 +77,7 @@ class DrugDBServiceTest extends FlatSpec with MockFactory {
       Drug("name", 1, Option(1)),
       Drug("name", 1, Option(2))
     )
-    (drugDAO.all _).expects().returns(exptDrugs.future)
+    (drugDAO.all _).expects().returns(exptDrugs.toFuture)
 
     val future = service.getDrugs.map { drugs =>
       assert(drugs === exptDrugs)
@@ -93,8 +93,8 @@ class DrugDBServiceTest extends FlatSpec with MockFactory {
     val renamedDrug = drug.copy(name = newName) 
     val exptAffectedRows = 1
 
-    (drugDAO.byId _).expects(drugId).returns(Option(drug).future)
-    (drugDAO.update _).expects(renamedDrug).returns(exptAffectedRows.future)
+    (drugDAO.byId _).expects(drugId).returns(Option(drug).toFuture)
+    (drugDAO.update _).expects(renamedDrug).returns(exptAffectedRows.toFuture)
 
     val future = service.renameDrug(drugId, newName).map { affectedRows =>
       assert(affectedRows === exptAffectedRows)
@@ -106,7 +106,7 @@ class DrugDBServiceTest extends FlatSpec with MockFactory {
   it should "throw `RuntimeException` on rename non-extining drug" in new Spec {
     val drugId = 1l
 
-    (drugDAO.byId _).expects(drugId).returns(None.future)
+    (drugDAO.byId _).expects(drugId).returns(None.toFuture)
 
     val ex = intercept[RuntimeException] {
       val future = service.renameDrug(drugId, "renamed")

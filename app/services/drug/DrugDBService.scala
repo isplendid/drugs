@@ -31,7 +31,7 @@ class DrugDBService @Inject()(
 
   def renameDrug(id: Drug.Id, name: String)(implicit ec: ExecutionContext): Future[Int] = for {
     drugOpt <- drugDAO.byId(id)
-    drug    <- drugOpt.getOrElse[Drug](throw new RuntimeException("Invalid drug Id.")).future
+    drug    <- drugOpt.getOrElse[Drug](throw new RuntimeException("Invalid drug Id.")).toFuture
     rows    <- drugDAO.update(drug.copy(name = name))
   } yield rows
 

@@ -14,7 +14,7 @@ object Util {
   object Implicits {
 
     implicit class Futurable[A](a: A) {
-      def future: Future[A] = Future.successful(a)
+      def toFuture: Future[A] = Future.successful(a)
     }
   }
 

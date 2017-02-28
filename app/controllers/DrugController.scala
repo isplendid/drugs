@@ -32,7 +32,7 @@ class DrugController @Inject() (
       for {
         distId <- drugService.insert(drugDTO.distributor.toModel)
         drugId <- drugService.insert(drugDTO.toModel(distId))
-        _      <- drugDTO.ingredients.foreach(ing => drugService.insert(ing.toModel(drugId))).future
+        _      <- drugDTO.ingredients.foreach(ing => drugService.insert(ing.toModel(drugId))).toFuture
       } yield Ok(Json.toJson(drugId))
     })
   }
