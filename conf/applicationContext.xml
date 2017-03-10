@@ -1,0 +1,32 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+       ">
+
+    <!-- Define Hello World endpoint. It will be available at http://localhost:9000/service/hello -->
+    <!--transportId="http://schemas.xmlsoap.org/soap/http"-->
+
+    <jaxws:endpoint
+            name="DrugSoapApi"
+            wsdlLocation="drugs.wsdl"
+            transportId="http://schemas.xmlsoap.org/soap/http"
+            address="/service/drugs"
+            publishedEndpointUrl="/service/drugs"
+            implementor="#DrugsServiceImplBean"
+            >
+        <jaxws:properties>
+            <entry key="schema-validation-enabled" value="true" />
+        </jaxws:properties>
+    </jaxws:endpoint>
+
+    <bean id="DrugsServiceImplBean"
+          class="soap.SoapController"
+          scope="singleton"/>
+
+    <!-- Import Apache CXF configuration and Play! transport plugin. -->
+    <import resource="classpath:cxf.xml"/>
+
+</beans>

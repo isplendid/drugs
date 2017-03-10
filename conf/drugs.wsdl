@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions
+        xmlns="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns:tns="http://drugservice.hu"
+        xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+        targetNamespace="http://drugservice.hu"
+        name="DrugSoapAPI">
+
+    <wsdl:types>
+        <xs:schema
+                xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                attributeFormDefault="unqualified"
+                elementFormDefault="unqualified"
+                xmlns:tns="http://drugservice.hu"
+                targetNamespace="http://drugservice.hu" version="1.0">
+
+            <xs:complexType name="DrugListType">
+                <xs:sequence>
+                    <xs:element name="Drugs" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:element name="Drugs" type="tns:DrugListType" />
+
+        </xs:schema>
+    </wsdl:types>
+
+    <wsdl:message name="all" />
+
+    <wsdl:message name="drugs">
+        <wsdl:part name="parameters" element="tns:Drugs" />
+    </wsdl:message>
+
+    <wsdl:portType name="DrugSoapAPI">
+        <wsdl:operation name="all">
+            <wsdl:input message="tns:all" name="all" />
+            <wsdl:output message="tns:drugs" name="result" />
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:binding name="DrugSoapAPIBinding" type="tns:DrugSoapAPI">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document" />
+        <wsdl:operation name="all">
+            <soap:operation soapAction="" style="document" />
+            <wsdl:input name="all">
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output name="drugs">
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+    <wsdl:service name="DrugSoapAPIService">
+        <wsdl:port name="DrugSoapAPIServicePort" binding="tns:DrugSoapAPIBinding" />
+    </wsdl:service>
+
+
+</wsdl:definitions>
