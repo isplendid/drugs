@@ -10,3 +10,7 @@ DELETE  /drugs/:id/                     controllers.DrugController.delete(id: Lo
 
 # Assets
 GET /assets/*file                       controllers.Assets.versioned(path="/public", file: Asset)
+
+# Apache CXF controller
+GET         /service/*path        org.apache.cxf.transport.play.CxfController.handle(path)
+POST        /service/*path        org.apache.cxf.transport.play.CxfController.handle(path)
